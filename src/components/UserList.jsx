@@ -6,31 +6,23 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
-        const usersWithPostsCount = response.data.map(async (user) => {
-          const postsResponse = await axios.get(
-            `https://jsonplaceholder.typicode.com/posts?userId=${user.id}`
-          );
-          return {
-            ...user,
-            postsCount: postsResponse.data.length,
-          };
-        });
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
-        Promise.all(usersWithPostsCount)
-          .then((updatedUsers) => setUsers(updatedUsers))
-          .catch((error) =>
-            console.error("Error fetching posts count:", error)
-          );
-      })
-      .catch((error) => console.error("Error fetching users:", error));
+    fetchUsers();
   }, []);
 
   return (
     <div>
-      <h1 className="text-4xl text-center my-10">Directory</h1>
+      <h1 className="text-4xl text-center my-10">User Directory</h1>
       <ul className="grid grid-cols-1 md:grid-cols-3">
         {users.map((user) => (
           <li key={user.id} className="bg-gray-200 p-4 m-4 rounded-lg">

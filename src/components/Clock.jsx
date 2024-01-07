@@ -22,15 +22,18 @@ const Clock = ({ selectedCountry }) => {
           const updatedUnixTime = Math.floor(
             timeData.unixtime + elapsedPausedTime
           );
-          setTimeData({
-            ...timeData,
+          setTimeData((prevData) => ({
+            ...prevData,
             unixtime: updatedUnixTime,
-          });
+          }));
         }
       } catch (error) {
         console.error("Error fetching time:", error);
       }
     };
+
+    // Fetch initial time
+    fetchTime();
 
     const interval = setInterval(() => {
       if (!isPaused) {
