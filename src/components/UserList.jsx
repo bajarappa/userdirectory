@@ -8,7 +8,23 @@ const UserList = () => {
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => setUsers(response.data))
+      .then((response) => {
+        const usersWithPostsCount = response.data.map(async (user) => {
+          const postsResponse = await axios.get(
+            `https://jsonplaceholder.typicode.com/posts?userId=${user.id}`
+          );
+          return {
+            ...user,
+            postsCount: postsResponse.data.length,
+          };
+        });
+
+        Promise.all(usersWithPostsCount)
+          .then((updatedUsers) => setUsers(updatedUsers))
+          .catch((error) =>
+            console.error("Error fetching posts count:", error)
+          );
+      })
       .catch((error) => console.error("Error fetching users:", error));
   }, []);
 
@@ -19,7 +35,10 @@ const UserList = () => {
         {users.map((user) => (
           <li key={user.id}>
             <Link to={`/user/${user.id}`}>
-              {user.name} - Posts: {/* Fetch and display post count here */}
+              <div>
+                <p>{user.name}</p>
+                <p>Total Posts: {user.postsCount}</p>
+              </div>
             </Link>
           </li>
         ))}
