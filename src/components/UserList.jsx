@@ -30,13 +30,15 @@ const UserList = () => {
 
   return (
     <div>
-      <h1>User Directory</h1>
-      <ul>
+      <h1 className="text-4xl text-center my-10">Directory</h1>
+      <ul className="grid grid-cols-1 md:grid-cols-3">
         {users.map((user) => (
-          <li key={user.id}>
+          <li key={user.id} className="bg-gray-200 p-4 m-4 rounded-lg">
             <Link to={`/user/${user.id}`}>
-              <div>
-                <p>{user.name}</p>
+              <div className="flex justify-between">
+                <p>
+                  Name: <span className="font-medium">{user.name}</span>{" "}
+                </p>
                 <p>Total Posts: {user.postsCount}</p>
               </div>
             </Link>

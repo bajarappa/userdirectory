@@ -47,15 +47,30 @@ const UserProfile = () => {
 
   return (
     <div>
-      <Link to="/">Back to User Directory</Link>
       {user && (
         <div>
-          <h2>{user.name}</h2>
-
           {/* Upper Segment */}
-          <div>
-            <h3>Profile Page</h3>
-            <label htmlFor="countrySelector">Select Country: </label>
+          <div className=" flex justify-between items-center bg-gray-200 m-4 p-4 rounded-lg">
+            <div className="flex gap-4">
+              <Link to="/">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18"
+                  />
+                </svg>
+              </Link>
+              <h1 className="text-xl font-semibold">User Profile</h1>
+            </div>
+            {/* <label htmlFor="countrySelector">Select Country: </label> */}
             <select
               id="countrySelector"
               onChange={handleCountryChange}
@@ -67,36 +82,35 @@ const UserProfile = () => {
                   {country}
                 </option>
               ))}
-            </select>
-          </div>
-
-          <div>
+            </select>{" "}
             <Clock selectedCountry={selectedCountry} />
           </div>
 
-          {/* User Details */}
-          <div>
-            <h3>User Details</h3>
-            <p>Name: {user.name}</p>
-            <p>Username: {user.username}</p>
-            <p>Catch Phrase: {user.company.catchPhrase}</p>
-          </div>
-
-          {/* Contact Information */}
-          <div>
-            <h3>Contact Information</h3>
-            <p>
-              Address: {user.address.city}, {user.address.street},{" "}
-              {user.address.suite}
-            </p>
-            <p>Email: {user.email}</p>
-            <p>Phone: {user.phone}</p>
+          <div className="flex flex-col gap-4 md:flex-row bg-gray-200 m-4 p-4 justify-between rounded-lg">
+            {/* User Details */}
+            <div>
+              <p className="text-lg font-semibold"> {user.name}</p>
+              <div className="flex">
+                <p className="text-base">{user.username} | </p>
+                <p>&nbsp;{user.company.catchPhrase}</p>
+              </div>
+            </div>
+            {/* Contact Information */}
+            <div className="">
+              <p className="text-lg font-normal">
+                {user.address.city}, {user.address.street}, {user.address.suite}
+              </p>
+              <div className="flex">
+                <p className="text-base font-medium"> {user.email} | </p>
+                <p className="text-base font-medium">&nbsp;{user.phone}</p>
+              </div>
+            </div>
           </div>
 
           {/* Posts */}
           <div>
-            <h3>Posts</h3>
-            <div>
+            <h1 className="text-xl font-semibold ml-4">Posts</h1>
+            <div className="grid grid-cols-1 md:grid-cols-3">
               {posts.map((post) => (
                 <Post
                   key={post.id}

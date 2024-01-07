@@ -4,7 +4,7 @@ import axios from "axios";
 const Clock = ({ selectedCountry }) => {
   const [timeData, setTimeData] = useState({});
   const [isPaused, setIsPaused] = useState(false);
-  const [initialTime, setInitialTime] = useState(null);
+  const [pausedUnixTime, setPausedUnixTime] = useState(null);
 
   useEffect(() => {
     const fetchTime = async () => {
@@ -13,7 +13,20 @@ const Clock = ({ selectedCountry }) => {
           `http://worldtimeapi.org/api/timezone/${selectedCountry}`
         );
         setTimeData(response.data);
-        setInitialTime(Date.now());
+
+        // If pausedUnixTime is set, calculate the paused time
+        if (isPaused && pausedUnixTime !== null) {
+          const elapsedPausedTime = Math.floor(
+            (Date.now() - pausedUnixTime) / 1000
+          );
+          const updatedUnixTime = Math.floor(
+            timeData.unixtime + elapsedPausedTime
+          );
+          setTimeData({
+            ...timeData,
+            unixtime: updatedUnixTime,
+          });
+        }
       } catch (error) {
         console.error("Error fetching time:", error);
       }
@@ -26,37 +39,26 @@ const Clock = ({ selectedCountry }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isPaused, selectedCountry]);
+  }, [isPaused, pausedUnixTime, selectedCountry]);
 
   const togglePause = () => {
-    setIsPaused(!isPaused);
-  };
-
-  const getDisplayTime = () => {
     if (isPaused) {
-      return timeData.utc_datetime; // Display the paused time
+      setIsPaused(false);
+      setPausedUnixTime(null); // Reset paused time when unpausing
     } else {
-      const elapsedSeconds = isPaused
-        ? 0
-        : Math.floor((Date.now() - initialTime) / 1000);
-      const updatedUnixTime = timeData.unixtime + elapsedSeconds;
-
-      // Handling Date object creation more gracefully
-      const updatedDateTime = new Date(updatedUnixTime * 1000).toLocaleString(
-        "en-US",
-        { timeZone: timeData.timezone }
-      );
-
-      return updatedDateTime;
+      setIsPaused(true);
+      setPausedUnixTime(timeData.unixtime); // Set paused time when pausing
     }
   };
 
+  const getDisplayTime = () => {
+    return new Date(timeData.unixtime * 1000).toLocaleTimeString();
+  };
+
   return (
-    <div>
-      <h3>Current Time</h3>
+    <div className="flex justify-between gap-4">
       <p>{getDisplayTime()}</p>
-      <p>Time Zone: {timeData.timezone}</p>
-      <button onClick={togglePause}>{isPaused ? "Start" : "Pause"}</button>
+      <button onClick={togglePause}>{isPaused ? "Resume" : "Pause"}</button>
     </div>
   );
 };
